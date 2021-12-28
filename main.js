@@ -9,13 +9,17 @@ function Task(description) {
 }
 
 addTaskBtn.addEventListener("click", () => {
-    tasks.push(new task(deskTaskInput.value));
+    tasks.push(new Task(deskTaskInput.value));
     console.log(tasks)
-});
+})
 
 const makeTodos = (todo) => {
     return `
-        <div></div>
-    `
+    <div class="todo-item">
+      <input type="checkbox" name="" id="" class="">
+      <div class="description">${todo.description}</div>
+      <button class="delete-button">Delete</button>
+    </div>
+  `
 
 };
