@@ -1,0 +1,7 @@
+.flex {
+    display: flex;
+    width: 225px;
+    height: 25px;
+    justify-content: space-between;
+    margin-top: 10px;
+}
