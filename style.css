@@ -4,4 +4,20 @@
     height: 25px;
     justify-content: space-between;
     margin-top: 10px;
+    text-align: center;
+}
+h1{font-size:40px;
+    font-family: sans-serif;
+    color:rgb(236, 114, 114);
+    text-align: center;
+    text-shadow: 2px 2px 5px #fff;
+    opacity: 60%;
+}
+body {
+    text-align: center;
+   
+}
+.btn:hover{
+    background-color:rgb(236, 114, 114);
+    color:#fff;
 }

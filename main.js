@@ -48,7 +48,7 @@ $(document).ready(function() {
         makeTodo($('#text').val());
         $('#text').val("");
         render(todos);
-    }
+    } else alert("Enter some Text!");
   };
 
   const checkEnter = (event) => {
