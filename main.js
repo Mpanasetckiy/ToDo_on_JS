@@ -14,11 +14,23 @@ $(document).ready(function() {
 
   const createHtml = (todo) => {
     return ` <div class="flex">
-              <input type="checkbox">
-              <div class="alert alert-success alert-dismissible fade in">${todo.description}</div>
+              <input class="elem-input" data-id="${todo.id}" type="checkbox">
+              <div class="container">${todo.description}</div>
               <button data-id="${todo.id}" class="close">x</button>
             </div>`
   };
+
+  const isChecked = (event) => {
+    const id = Number(event.target.dataset.id);
+    todos.forEach((elem) => {
+      if (id === elem.id) {
+        elem.checked = true;
+      }
+    });
+    console.log(todos);
+  };
+
+  
 
   const render = (arr) => {
     let result = '';
@@ -28,7 +40,8 @@ $(document).ready(function() {
       });
       $('.container').html(result);
       $('.close').click(deleteTodo);
-  };
+      $('.elem-input').click(isChecked);
+     };
 
   const addTodo = () => {
     if ($('#text').val().length != 0) {
@@ -56,4 +69,4 @@ $(document).ready(function() {
 
   $('.btn').click(addTodo);
   $('#text').keydown(checkEnter);
-});
+	});
