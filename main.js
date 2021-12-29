@@ -2,6 +2,7 @@ $(document).ready(function() {
   const todos = [];
   const KEY_ENTER = 'Enter';
 
+
   function Todo(description) {
     this.id = Date.now();
     this.description = description;
@@ -15,7 +16,7 @@ $(document).ready(function() {
   const createHtml = (todo) => {
     return ` <div class="flex">
               <input class="elem-input" data-id="${todo.id}" type="checkbox">
-              <div class="container">${todo.description}</div>
+              <div class="container" data-id="${todo.id}">${todo.description}</div>
               <button data-id="${todo.id}" class="close">x</button>
             </div>`
   };
@@ -44,7 +45,7 @@ $(document).ready(function() {
      };
 
   const addTodo = () => {
-    if ($('#text').val().length != 0) {
+    if ($('#text').val().length !== 0) {
         makeTodo($('#text').val());
         $('#text').val("");
         render(todos);
@@ -67,6 +68,16 @@ $(document).ready(function() {
     render(todos);
   };
 
+  const checkAll = () => {
+
+
+  };
+
   $('.btn').click(addTodo);
   $('#text').keydown(checkEnter);
-	});
+  $('.chall').click((event) => {
+    $('.elem-input').each((index, elem) => {
+      elem.setAttribute('checked', true);
+    });
+  });
+});
