@@ -1,21 +1,14 @@
-const addTaskBtn = document.getElementById('add-task-btn');
-const deskTaskInput = document.getElementById('description-task');
-const todosWrapper = document.getElementById('todos-wrapper');
+$(document).ready(function() {
+  $('.btn-success').click(function() {
+    if ($('#text').val().length != 0) {
+      var x = $('.container').html();
+      var y =
+`<div class="alert alert-success alert-dismissible fade in">
+<a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+        ` + $('#text').val() + `</div>`;
+      $('.container').html(y + x);
+      $('#text').val("");
+    } else alert("Enter some Text!");
+  });
 
-let tasks =[];
-function Task(description) {
-    this.description = description;
-    this.completed = false;
-}
-
-addTaskBtn.addEventListener("click", () => {
-    tasks.push(new task(deskTaskInput.value));
-    console.log(tasks)
 });
-
-const makeTodos = (todo) => {
-    return `
-        <div></div>
-    `
-
-};
