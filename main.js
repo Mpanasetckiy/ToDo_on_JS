@@ -150,7 +150,7 @@ $(document).ready(function() {
     input.classList.remove('none');
 
     input.value = span.innerHTML;
-    console.log(input);
+    
 
     input.addEventListener('blur', onBlur);
   };
@@ -167,17 +167,18 @@ $(document).ready(function() {
     input.classList.add('none');
     span.classList.remove('none');
 
+    if(input.value.trim() !== ""){
     const inputValue = input.value;
-
+     
     span.innerHTML = inputValue;
-
+  
     todos.forEach((elem) => {
       if (id === elem.id){
         elem.description = inputValue;
       }
       });
-  };
-
+    }
+    };
 
 });
 
