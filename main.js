@@ -16,7 +16,8 @@ $(document).ready(function() {
   const createHtml = (todo) => {
     return ` <div class="flex">
               <input class="elem-input" data-id="${todo.id}" type="checkbox" ${todo.checked ? "checked" : ""}>
-              <div class="container" data-id="${todo.id}">${todo.description}</div>
+              <span type="text" class="task task-${todo.id}" data-id="${todo.id}">${todo.description}</span>
+              <input type="text" class="edit edit-${todo.id} none"  data-id="${todo.id}" placeholder="${todo.description}">
               <button data-id="${todo.id}" class="close">x</button>
             </div>`
   };
@@ -57,21 +58,31 @@ $(document).ready(function() {
       });
       $('.container').html(result);
       $('.close').click(deleteTodo);
+      $('.edit').keydown(checkEnterAgain);
       $('.elem-input').click(isChecked);
+      $('.task').dblclick(editTodoClick);
       count();
+      console.log(todos);
      };
 
   const addTodo = () => {
-    if ($('#text').val().length !== 0) {
+    if ($('#text').val().trim().length !== 0) {
         makeTodo($('#text').val());
         $('#text').val("");
         render(todos);
     } else alert("Enter some Text!");
   };
-
+     
   const checkEnter = (event) => {
     if (event.key === KEY_ENTER) {
       addTodo();
+    }
+  };
+  
+  const checkEnterAgain = (event) => {
+    if (event.key === KEY_ENTER) {
+      const id = Number(event.target.dataset.id);
+       qwe(id);
     }
   };
 
@@ -100,6 +111,7 @@ $(document).ready(function() {
   $('#text').keydown(checkEnter);
   $('.main').click(checkAll);
 
+
   const count = () => {
     let active = 0;
     let done = 0;
@@ -126,6 +138,46 @@ $(document).ready(function() {
     result = createHtmlTask(active, done);
     $('.tasks-counter').html(result);
   };
+  
+  const editTodoClick = (event) => {
+
+    const id = Number(event.target.dataset.id);
+    
+    const span = document.querySelector(`.task-${id}`)
+    const input = document.querySelector(`.edit-${id}`)
+
+    span.classList.add('none');
+    input.classList.remove('none');
+
+    input.value = span.innerHTML;
+    console.log(input);
+
+    input.addEventListener('blur', onBlur);
+  };
+
+  const onBlur = (event) => {
+    const id = Number(event.target.dataset.id);
+    qwe(id);
+  };
+
+  const qwe = (id) => {
+    const span = document.querySelector(`.task-${id}`)
+    const input = document.querySelector(`.edit-${id}`)
+
+    input.classList.add('none');
+    span.classList.remove('none');
+
+    const inputValue = input.value;
+
+    span.innerHTML = inputValue;
+
+    todos.forEach((elem) => {
+      if (id === elem.id){
+        elem.description = inputValue;
+      }
+      });
+  };
+
 
 });
 

@@ -11,15 +11,18 @@ h1{font-size:40px;
     color:rgb(236, 114, 114);
     text-align: center;
     text-shadow: 2px 2px 5px #fff;
-    opacity: 60%;
+    opacity: 50%;
 }
 body {
-    text-align: center;
+    text-align: center
+    
+   
    
 }
 .btn:hover{
     background-color:rgb(236, 114, 114);
     color:#fff;
+    
 }
 
 
@@ -39,4 +42,7 @@ body {
     flex-direction: column;
     align-items: center;
     font-family: sans-serif
+}
+.none {
+    display: none;
 }
