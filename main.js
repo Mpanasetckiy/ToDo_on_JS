@@ -7,6 +7,8 @@ $(document).ready(function() {
     this.id = Date.now();
     this.description = description;
     this.checked = false;
+    // this.class = "active";
+  
   }
 
   const makeTodo = (description) => {
@@ -14,10 +16,11 @@ $(document).ready(function() {
   };
 
   const createHtml = (todo) => {
-    return ` <div class="flex">
+    const item = _.escape(todo.description);
+    return ` <div class="flex grid">
               <input class="elem-input" data-id="${todo.id}" type="checkbox" ${todo.checked ? "checked" : ""}>
-              <span type="text" class="task task-${todo.id}" data-id="${todo.id}">${todo.description}</span>
-              <input type="text" class="edit edit-${todo.id} none"  data-id="${todo.id}" placeholder="${todo.description}">
+              <span type="text" class="task task-${todo.id}" data-id="${todo.id}">${item}</span>
+              <input type="text" class="edit edit-${todo.id} none"  data-id="${todo.id}">
               <button data-id="${todo.id}" class="close">x</button>
             </div>`
   };
@@ -53,8 +56,10 @@ $(document).ready(function() {
 
   const render = (arr) => {
     let result = '';
+   
       arr.forEach((elem) => {
         result += createHtml(elem);
+        console.log(elem);
       });
       $('.container').html(result);
       $('.close').click(deleteTodo);
@@ -62,7 +67,6 @@ $(document).ready(function() {
       $('.elem-input').click(isChecked);
       $('.task').dblclick(editTodoClick);
       count();
-      console.log(todos);
      };
 
   const addTodo = () => {
@@ -70,7 +74,8 @@ $(document).ready(function() {
         makeTodo($('#text').val());
         $('#text').val("");
         render(todos);
-    } else alert("Enter some Text!");
+      }pagination();
+   
   };
      
   const checkEnter = (event) => {
@@ -98,6 +103,7 @@ $(document).ready(function() {
 
   const checkAll = (event) => {
     todos.forEach((elem, index) => {
+
      if(event.target.checked){
       elem.checked = true;
      } else {
@@ -127,9 +133,10 @@ $(document).ready(function() {
   };
   
   const createHtmlTask = (active, done) => {
-    return `<div class="total-tasks">Total tasks:${todos.length}</div>
-            <div class="active-tasks">Active tasks:${active}</div>
-            <div class="completed-tasks">Completed tasks:${done}</div>  
+    return `<label for="total-tasks">All:</label>
+            <div class="total-tasks">${todos.length}</div>
+            <div class="active-tasks">Active: ${active}</div>
+            <div class="completed-tasks">Completed: ${done}</div>  
 	         `
   };
 
@@ -143,8 +150,8 @@ $(document).ready(function() {
 
     const id = Number(event.target.dataset.id);
     
-    const span = document.querySelector(`.task-${id}`)
-    const input = document.querySelector(`.edit-${id}`)
+    const span = document.querySelector(`.task-${id}`);
+    const input = document.querySelector(`.edit-${id}`);
 
     span.classList.add('none');
     input.classList.remove('none');
@@ -157,20 +164,22 @@ $(document).ready(function() {
 
   const onBlur = (event) => {
     const id = Number(event.target.dataset.id);
-    qwe(id);
+      qwe(id);
   };
 
   const qwe = (id) => {
-    const span = document.querySelector(`.task-${id}`)
-    const input = document.querySelector(`.edit-${id}`)
+    const span = document.querySelector(`.task-${id}`);
+    const input = document.querySelector(`.edit-${id}`);
 
     input.classList.add('none');
     span.classList.remove('none');
+    
+    let i = _.escape(input.value);
 
     if(input.value.trim() !== ""){
     const inputValue = input.value;
      
-    span.innerHTML = inputValue;
+    span.innerHTML = i;
   
     todos.forEach((elem) => {
       if (id === elem.id){
@@ -179,6 +188,28 @@ $(document).ready(function() {
       });
     }
     };
-
+  
+    const pagination = () => {
+    const tasks = document.querySelector(`.total-tasks`);
+    const taskDiv = $(`.flex`);
+    const taskCount = tasks.innerHTML;
+       let fig = taskCount%5;
+       let m = Math.ceil(taskCount/5);
+            if (fig === 1) {
+          $('.pagination').append("<div class='page'>"+m+"</div>");
+          }
+          $(".page:first-child").addClass('active');
+          $(`.flex`).filter(function( index ) { return index < 5;}).addClass('active');
+          $('body').delegate('.page','click',function(){
+            let page_index=$(this).index();
+            let start=page_index*5;
+            taskDiv.removeClass('active');
+          $(".page").removeClass('active');
+          $(".page").eq(page_index).addClass('active');
+            for(let j=0;j<5;j++){
+            taskDiv.eq(start+j).addClass('active');
+          }
+        });
+    };render(todos);
 });
 

@@ -5,6 +5,15 @@
     justify-content: space-between;
     margin-top: 10px;
     text-align: center;
+    display: none;
+}
+.flex.active {
+    display: flex;
+    width: 225px;
+    height: 25px;
+    justify-content: space-between;
+    margin-top: 10px;
+    text-align: center;
 }
 h1{font-size:40px;
     font-family: sans-serif;
@@ -24,17 +33,14 @@ body {
     color:#fff;
     
 }
-
-
 .tasks-counter {
     display: flex;
     margin: 0 auto;
     justify-content: space-around;
-    width: 500px;
+    width: 250px;
     padding: 10px;
     font-family: sans-serif;
 }
-
 .container {
     width: 500px;
     margin: 0 auto;
@@ -46,3 +52,22 @@ body {
 .none {
     display: none;
 }
+.pagination {
+    background: #808080;
+    color: white;
+    width: 320px;
+    margin: auto;
+    text-align: center;
+    padding: 10px 0;
+    max-width:100%;
+    border-radius: 5px;
+}
+.page {
+    width: 20px;
+    display: inline-block;
+    text-align: center;
+    border: 1px solid white;
+    margin: 0 2px;
+    cursor: pointer;
+}
+
