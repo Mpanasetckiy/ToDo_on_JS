@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(function() {
   const todos = [];
   const KEY_ENTER = 'Enter';
 
@@ -7,6 +7,8 @@ $(document).ready(function() {
     this.id = Date.now();
     this.description = description;
     this.checked = false;
+  
+  
   }
 
   const makeTodo = (description) => {
@@ -14,17 +16,18 @@ $(document).ready(function() {
   };
 
   const createHtml = (todo) => {
+    const item = _.escape(todo.description);
     return ` <div class="flex">
-              <input class="elem-input" data-id="${todo.id}" type="checkbox" ${todo.checked ? "checked" : ""}>
-              <span type="text" class="task task-${todo.id}" data-id="${todo.id}">${todo.description}</span>
-              <input type="text" class="edit edit-${todo.id} none"  data-id="${todo.id}" placeholder="${todo.description}">
-              <button data-id="${todo.id}" class="close">x</button>
+              <input class="elem-input" data-id="${todo.id}" id="btn" type="checkbox" ${todo.checked ? "checked" : ""}>
+              <span type="text" class="task task-${todo.id}" data-id="${todo.id}">${item}</span>
+              <input type="text" class="edit edit-${todo.id} none"  data-id="${todo.id}">
+              <button type="button" data-id="${todo.id}" class="close btn-close" aria-label="Close"></button>
             </div>`
   };
 
   const checkTodo = () => {
     let check = true;
-    const mainCheck = $('.main')[0];
+    const mainCheck = $('#main')[0];
     todos.forEach((elem) => {
       check = check && elem.checked;
     });
@@ -53,6 +56,7 @@ $(document).ready(function() {
 
   const render = (arr) => {
     let result = '';
+   
       arr.forEach((elem) => {
         result += createHtml(elem);
       });
@@ -61,8 +65,8 @@ $(document).ready(function() {
       $('.edit').keydown(checkEnterAgain);
       $('.elem-input').click(isChecked);
       $('.task').dblclick(editTodoClick);
+      
       count();
-      console.log(todos);
      };
 
   const addTodo = () => {
@@ -70,7 +74,8 @@ $(document).ready(function() {
         makeTodo($('#text').val());
         $('#text').val("");
         render(todos);
-    } else alert("Enter some Text!");
+      }pagination();
+   
   };
      
   const checkEnter = (event) => {
@@ -91,6 +96,7 @@ $(document).ready(function() {
     todos.forEach((elem, index) => {
       if (id === elem.id) {
         todos.splice(index, 1);
+       
       }
     });
     render(todos);
@@ -107,9 +113,37 @@ $(document).ready(function() {
     render(todos);
   };
 
-  $('.btn').click(addTodo);
+ 
+  
+  const switchTabs = (activeBtn) => {
+    let filtratedArray = [];
+    switch (activeBtn) {
+      case 'All':
+        render(todos);
+        break;
+      case 'Active':
+        render(todos.filter((elem) => !elem.checked));
+        break;
+      case 'Completed': 
+        render(todos.filter((elem) => elem.checked));
+        break;
+      default: return filtratedArray;
+     }
+     
+  };
+  
+
+
+  const getActiveBtn = (event) => {
+    const activeBtn = event.target.getAttribute('data');
+     switchTabs(activeBtn);
+  };
+
+  $('#btn').click(addTodo);
   $('#text').keydown(checkEnter);
-  $('.main').click(checkAll);
+  $('#main').click(checkAll);
+  $(".tasks-counter").click(getActiveBtn);
+  
 
 
   const count = () => {
@@ -127,9 +161,10 @@ $(document).ready(function() {
   };
   
   const createHtmlTask = (active, done) => {
-    return `<div class="total-tasks">Total tasks:${todos.length}</div>
-            <div class="active-tasks">Active tasks:${active}</div>
-            <div class="completed-tasks">Completed tasks:${done}</div>  
+    return `
+            <button id ="btn-total" class="total-tasks badge bg-secondary" data="All">All: ${todos.length}</button>
+            <button class="active-tasks badge bg-secondary" data="Active">Active: ${active}</button>
+            <button class="completed-tasks badge bg-secondary" data="Completed">Completed: ${done}</button>  
 	         `
   };
 
@@ -142,43 +177,74 @@ $(document).ready(function() {
   const editTodoClick = (event) => {
 
     const id = Number(event.target.dataset.id);
-    
-    const span = document.querySelector(`.task-${id}`)
-    const input = document.querySelector(`.edit-${id}`)
+      
+    const span = document.querySelector(`.task-${id}`);
+    const input = document.querySelector(`.edit-${id}`);
 
     span.classList.add('none');
     input.classList.remove('none');
 
     input.value = span.innerHTML;
-    
-
-    input.addEventListener('blur', onBlur);
   };
-
   const onBlur = (event) => {
     const id = Number(event.target.dataset.id);
-    qwe(id);
-  };
-
-  const qwe = (id) => {
-    const span = document.querySelector(`.task-${id}`)
-    const input = document.querySelector(`.edit-${id}`)
-
-    input.classList.add('none');
-    span.classList.remove('none');
-
-    if(input.value.trim() !== ""){
-    const inputValue = input.value;
-     
-    span.innerHTML = inputValue;
-  
-    todos.forEach((elem) => {
-      if (id === elem.id){
-        elem.description = inputValue;
-      }
-      });
-    }
+        qwe(id);
     };
 
+  const qwe = (id) => {
+    const span = document.querySelector(`.task-${id}`);
+    const input = document.querySelector(`.edit-${id}`);
+
+      input.classList.add('none');
+      span.classList.remove('none');
+    
+      if(input.value.trim() !== ""){
+           
+        span.innerHTML = _.escape(input.value);
+        todos.forEach((elem) => {
+          if (id === elem.id){
+             elem.description = input.value;
+            }
+        });
+      }
+  };
+  
+  const pagination = () => {
+     const m = Math.ceil(todos.length/5);
+
+       if (todos.length%5 === 1) {
+        $('.pagination').append(`<div  class='page btn-secondary' data="${m}">${m}</div>`);
+       }
+
+
+     
+  };
+//const btns = document.querySelector('.pagination');
+ //   btns.addEventListener('click', (event) => {
+ //     showCurrentPage(event);
+  //  });
+  
+  const showCurrentPage = (event) => {
+    let currentPage = event.target.getAttribute(`data`);
+    showCurrentList(currentPage)
+    console.log(currentPage);
+  };
+
+  const showCurrentList = (currentPage) => {
+    let start = (currentPage-1)*5;
+    render(todos.slice((currentPage-1)*5, (start) + 5));
+
+      
+      console.log(currentPage);
+    
+  }
+  
+  
+  
+   $('.pagination').click(showCurrentPage);
+
+  
+  
+render(todos);
 });
 
