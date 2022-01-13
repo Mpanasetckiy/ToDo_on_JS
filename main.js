@@ -2,14 +2,11 @@ $(function() {
   const todos = [];
   const KEY_ENTER = 'Enter';
 
-
   function Todo(description) {
     this.id = Date.now();
     this.description = description;
     this.checked = false;
-  
-  
-  }
+   }
 
   const makeTodo = (description) => {
     todos.push(new Todo(description));
@@ -65,7 +62,6 @@ $(function() {
       $('.edit').keydown(checkEnterAgain);
       $('.elem-input').click(isChecked);
       $('.task').dblclick(editTodoClick);
-      
       count();
      };
 
@@ -73,10 +69,10 @@ $(function() {
     if ($('#text').val().trim().length !== 0) {
         makeTodo($('#text').val());
         $('#text').val("");
-        render(todos);
-      }pagination();
-   
-  };
+         render(todos);
+         pagination();
+      } 
+   };
      
   const checkEnter = (event) => {
     if (event.key === KEY_ENTER) {
@@ -96,9 +92,8 @@ $(function() {
     todos.forEach((elem, index) => {
       if (id === elem.id) {
         todos.splice(index, 1);
-       
       }
-    });
+    }); 
     render(todos);
   };
 
@@ -113,8 +108,6 @@ $(function() {
     render(todos);
   };
 
- 
-  
   const switchTabs = (activeBtn) => {
     let filtratedArray = [];
     switch (activeBtn) {
@@ -129,11 +122,8 @@ $(function() {
         break;
       default: return filtratedArray;
      }
-     
   };
   
-
-
   const getActiveBtn = (event) => {
     const activeBtn = event.target.getAttribute('data');
      switchTabs(activeBtn);
@@ -143,9 +133,7 @@ $(function() {
   $('#text').keydown(checkEnter);
   $('#main').click(checkAll);
   $(".tasks-counter").click(getActiveBtn);
-  
-
-
+    
   const count = () => {
     let active = 0;
     let done = 0;
@@ -185,7 +173,9 @@ $(function() {
     input.classList.remove('none');
 
     input.value = span.innerHTML;
+    input.addEventListener('blur', onBlur);
   };
+  
   const onBlur = (event) => {
     const id = Number(event.target.dataset.id);
         qwe(id);
@@ -204,47 +194,28 @@ $(function() {
         todos.forEach((elem) => {
           if (id === elem.id){
              elem.description = input.value;
-            }
+          }
         });
       }
   };
   
   const pagination = () => {
      const m = Math.ceil(todos.length/5);
-
-       if (todos.length%5 === 1) {
-        $('.pagination').append(`<div  class='page btn-secondary' data="${m}">${m}</div>`);
-       }
-
-
-     
+     let start = (m-1)*5;
+     render(todos.slice((m-1)*5, (start) + 5));
+        
+      if (todos.length%5 === 1) {
+        $('.pagination').append(`<div class='page btn-secondary'data="${m}">${m}</div>`);
+      }
+  }; 
+  
+  const currentPage = (event) => {
+    const m = event.target.getAttribute(`data`);
+    let start = (m-1)*5;
+     render(todos.slice((m-1)*5, (start) + 5));
+     console.log(m);
   };
-//const btns = document.querySelector('.pagination');
- //   btns.addEventListener('click', (event) => {
- //     showCurrentPage(event);
-  //  });
-  
-  const showCurrentPage = (event) => {
-    let currentPage = event.target.getAttribute(`data`);
-    showCurrentList(currentPage)
-    console.log(currentPage);
-  };
-
-  const showCurrentList = (currentPage) => {
-    let start = (currentPage-1)*5;
-    render(todos.slice((currentPage-1)*5, (start) + 5));
-
-      
-      console.log(currentPage);
-    
-  }
-  
-  
-  
-   $('.pagination').click(showCurrentPage);
-
-  
-  
+  $('.pagination').click(currentPage);
 render(todos);
 });
 
