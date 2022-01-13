@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(function() {
   const todos = [];
   const KEY_ENTER = 'Enter';
 
@@ -7,7 +7,7 @@ $(document).ready(function() {
     this.id = Date.now();
     this.description = description;
     this.checked = false;
-    // this.class = "active";
+  
   
   }
 
@@ -17,17 +17,17 @@ $(document).ready(function() {
 
   const createHtml = (todo) => {
     const item = _.escape(todo.description);
-    return ` <div class="flex grid">
-              <input class="elem-input" data-id="${todo.id}" type="checkbox" ${todo.checked ? "checked" : ""}>
+    return ` <div class="flex">
+              <input class="elem-input" data-id="${todo.id}" id="btn" type="checkbox" ${todo.checked ? "checked" : ""}>
               <span type="text" class="task task-${todo.id}" data-id="${todo.id}">${item}</span>
               <input type="text" class="edit edit-${todo.id} none"  data-id="${todo.id}">
-              <button data-id="${todo.id}" class="close">x</button>
+              <button type="button" data-id="${todo.id}" class="close btn-close" aria-label="Close"></button>
             </div>`
   };
 
   const checkTodo = () => {
     let check = true;
-    const mainCheck = $('.main')[0];
+    const mainCheck = $('#main')[0];
     todos.forEach((elem) => {
       check = check && elem.checked;
     });
@@ -59,13 +59,13 @@ $(document).ready(function() {
    
       arr.forEach((elem) => {
         result += createHtml(elem);
-        console.log(elem);
       });
       $('.container').html(result);
       $('.close').click(deleteTodo);
       $('.edit').keydown(checkEnterAgain);
       $('.elem-input').click(isChecked);
       $('.task').dblclick(editTodoClick);
+      
       count();
      };
 
@@ -96,6 +96,7 @@ $(document).ready(function() {
     todos.forEach((elem, index) => {
       if (id === elem.id) {
         todos.splice(index, 1);
+        console.log(index);
       }
     });
     render(todos);
@@ -113,9 +114,37 @@ $(document).ready(function() {
     render(todos);
   };
 
-  $('.btn').click(addTodo);
+ 
+  
+  const switchTabs = (activeBtn) => {
+    let filtratedArray = [];
+    switch (activeBtn) {
+      case 'All':
+        render(todos);
+        break;
+      case 'Active':
+        render(todos.filter((elem) => !elem.checked));
+        break;
+      case 'Completed': 
+        render(todos.filter((elem) => elem.checked));
+        break;
+      default: return filtratedArray;
+     }
+     
+  };
+  
+
+
+  const getActiveBtn = (event) => {
+    const activeBtn = event.target.getAttribute('data');
+     switchTabs(activeBtn);
+  };
+
+  $('#btn').click(addTodo);
   $('#text').keydown(checkEnter);
-  $('.main').click(checkAll);
+  $('#main').click(checkAll);
+  $(".tasks-counter").click(getActiveBtn);
+  
 
 
   const count = () => {
@@ -133,10 +162,10 @@ $(document).ready(function() {
   };
   
   const createHtmlTask = (active, done) => {
-    return `<label for="total-tasks">All:</label>
-            <div class="total-tasks">${todos.length}</div>
-            <div class="active-tasks">Active: ${active}</div>
-            <div class="completed-tasks">Completed: ${done}</div>  
+    return `
+            <button id ="btn-total" class="total-tasks badge bg-secondary" data="All">All: ${todos.length}</button>
+            <button class="active-tasks badge bg-secondary" data="Active">Active: ${active}</button>
+            <button class="completed-tasks badge bg-secondary" data="Completed">Completed: ${done}</button>  
 	         `
   };
 
@@ -149,7 +178,7 @@ $(document).ready(function() {
   const editTodoClick = (event) => {
 
     const id = Number(event.target.dataset.id);
-    
+      
     const span = document.querySelector(`.task-${id}`);
     const input = document.querySelector(`.edit-${id}`);
 
@@ -157,59 +186,70 @@ $(document).ready(function() {
     input.classList.remove('none');
 
     input.value = span.innerHTML;
-    
+      
 
     input.addEventListener('blur', onBlur);
   };
 
   const onBlur = (event) => {
     const id = Number(event.target.dataset.id);
-      qwe(id);
-  };
+        qwe(id);
+    };
 
   const qwe = (id) => {
     const span = document.querySelector(`.task-${id}`);
     const input = document.querySelector(`.edit-${id}`);
 
-    input.classList.add('none');
-    span.classList.remove('none');
+      input.classList.add('none');
+      span.classList.remove('none');
     
-    let i = _.escape(input.value);
-
-    if(input.value.trim() !== ""){
-    const inputValue = input.value;
-     
-    span.innerHTML = i;
-  
-    todos.forEach((elem) => {
-      if (id === elem.id){
-        elem.description = inputValue;
-      }
-      });
-    }
-    };
-  
-    const pagination = () => {
-    const tasks = document.querySelector(`.total-tasks`);
-    const taskDiv = $(`.flex`);
-    const taskCount = tasks.innerHTML;
-       let fig = taskCount%5;
-       let m = Math.ceil(taskCount/5);
-            if (fig === 1) {
-          $('.pagination').append("<div class='page'>"+m+"</div>");
-          }
-          $(".page:first-child").addClass('active');
-          $(`.flex`).filter(function( index ) { return index < 5;}).addClass('active');
-          $('body').delegate('.page','click',function(){
-            let page_index=$(this).index();
-            let start=page_index*5;
-            taskDiv.removeClass('active');
-          $(".page").removeClass('active');
-          $(".page").eq(page_index).addClass('active');
-            for(let j=0;j<5;j++){
-            taskDiv.eq(start+j).addClass('active');
-          }
+      if(input.value.trim() !== ""){
+           
+        span.innerHTML = _.escape(input.value);
+        todos.forEach((elem) => {
+          if (id === elem.id){
+             elem.description = input.value;
+            }
         });
-    };render(todos);
+      }
+  };
+  
+  const pagination = () => {
+     const m = Math.ceil(todos.length/5);
+
+       if (todos.length%5 === 1) {
+        $('.pagination').append(`<div  class='page btn-secondary' data="${m}">${m}</div>`);
+       }
+
+
+     
+  };
+//const btns = document.querySelector('.pagination');
+ //   btns.addEventListener('click', (event) => {
+ //     showCurrentPage(event);
+  //  });
+  
+  const showCurrentPage = (event) => {
+    let currentPage = event.target.getAttribute(`data`);
+    showCurrentList(currentPage)
+    console.log(currentPage);
+  };
+
+  const showCurrentList = (currentPage) => {
+    let start = (currentPage-1)*5;
+    render(todos.slice((currentPage-1)*5, (start) + 5));
+
+      
+      console.log(currentPage);
+    
+  }
+  
+  
+  
+   $('.pagination').click(showCurrentPage);
+
+  
+  
+render(todos);
 });
 
