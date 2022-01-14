@@ -1,12 +1,13 @@
 .flex {
     display: flex;
-    width: 225px;
-    height: 25px;
+    width: 380px;
+    text-align: center;
     justify-content: space-between;
     margin-top: 5px;
-    margin-bottom: 5px;
-    text-align: center;
-   
+    margin-bottom: 1px;
+    
+    border:1px solid #25333a;
+    border-radius: 20px;
     
 }
 .flex.active {
@@ -31,12 +32,12 @@ p{
 }
 body {
     
-    color: #25333a;
+    color: #000000;
 }
 .tasks-counter {
     margin: 0 auto;
     justify-content: space-around;
-    width: 250px;
+    
     padding: 10px;
     font-family: sans-serif;
 }
@@ -56,18 +57,18 @@ body {
     max-width: 100%;
     margin: auto;
     text-align: center;
-    padding: 10px 0;
+    padding: 50px 0;
     max-width:100%;
     border-radius: 5px;
 }
 .page {
-    width: 20px;
+   
     display: inline-block;
-    text-align: center;
+   
     border: 1px solid;
-    margin: 0 2px;
-    cursor: pointer;
-    border-radius: 5px;
+    margin:  1px;
+    
+    border-radius: 15px;
 }
 .info {
     font-size: 10px;

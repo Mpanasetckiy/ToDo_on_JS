@@ -1,8 +1,8 @@
 $(function() {
   const todos = [];
   const KEY_ENTER = 'Enter';
-
-  function Todo(description) {
+  let page = 1;
+    function Todo(description) {
     this.id = Date.now();
     this.description = description;
     this.checked = false;
@@ -14,7 +14,7 @@ $(function() {
 
   const createHtml = (todo) => {
     const item = _.escape(todo.description);
-    return ` <div class="flex">
+    return ` <div class="flex shadow-lg p-3 mb-1 bg-white">
               <input class="elem-input" data-id="${todo.id}" id="btn" type="checkbox" ${todo.checked ? "checked" : ""}>
               <span type="text" class="task task-${todo.id}" data-id="${todo.id}">${item}</span>
               <input type="text" class="edit edit-${todo.id} none"  data-id="${todo.id}">
@@ -37,7 +37,7 @@ $(function() {
 
   const isChecked = (event) => {
     const id = Number(event.target.dataset.id);
-    todos.forEach((elem) => {
+      todos.forEach((elem) => {
       if (id === elem.id) {
         if(event.target.checked){
           elem.checked = true;
@@ -48,13 +48,14 @@ $(function() {
       }
     });
     checkTodo();
-    render(todos);
+    removePage();
+    
   };
-
-  const render = (arr) => {
+   
+  const render = (todos) => {
     let result = '';
    
-      arr.forEach((elem) => {
+      todos.forEach((elem) => {
         result += createHtml(elem);
       });
       $('.container').html(result);
@@ -63,6 +64,7 @@ $(function() {
       $('.elem-input').click(isChecked);
       $('.task').dblclick(editTodoClick);
       count();
+     
      };
 
   const addTodo = () => {
@@ -70,7 +72,7 @@ $(function() {
         makeTodo($('#text').val());
         $('#text').val("");
          render(todos);
-         pagination();
+         fillButtons();
       } 
    };
      
@@ -87,14 +89,28 @@ $(function() {
     }
   };
 
+  const removePage = () => {
+    let start = (page-1)*5;
+    let end = start + 5;
+     if (page !== 1 && (todos.slice(start, end).length === 0)) {
+        $(`.page-${page}`).remove();
+        page -= 1;
+        fillFiveTodos();
+      } else {
+        fillFiveTodos();
+      }
+      console.log(todos.slice(start, end));
+      console.log(page);
+ };
+
   const deleteTodo = (event) => {
-    const id = Number(event.target.dataset.id);
+        const id = Number(event.target.dataset.id);
     todos.forEach((elem, index) => {
       if (id === elem.id) {
         todos.splice(index, 1);
       }
-    }); 
-    render(todos);
+    });    
+    removePage();
   };
 
   const checkAll = (event) => {
@@ -106,22 +122,31 @@ $(function() {
      }
     });
     render(todos);
+    removePage();
   };
 
+ // const  currentPageChecked = (arr) =>{
+ //   let start = (page-1)*5;
+ //    let end = start + 5;
+ //    render(arr.slice(start, end));
+  //}
+
   const switchTabs = (activeBtn) => {
-    let filtratedArray = [];
+   
     switch (activeBtn) {
       case 'All':
-        render(todos);
+      //  render(todos);
+        removePage();
         break;
       case 'Active':
-        render(todos.filter((elem) => !elem.checked));
+        render(todos.filter((elem) => !elem.checked))
+        
         break;
       case 'Completed': 
         render(todos.filter((elem) => elem.checked));
+        
         break;
-      default: return filtratedArray;
-     }
+      }
   };
   
   const getActiveBtn = (event) => {
@@ -145,14 +170,13 @@ $(function() {
       }
     });
     inner(active, done);
-    
   };
   
   const createHtmlTask = (active, done) => {
     return `
-            <button id ="btn-total" class="total-tasks badge bg-secondary" data="All">All: ${todos.length}</button>
-            <button class="active-tasks badge bg-secondary" data="Active">Active: ${active}</button>
-            <button class="completed-tasks badge bg-secondary" data="Completed">Completed: ${done}</button>  
+            <button class="total-tasks btn-secondary btn-lg" data="All">All: ${todos.length}</button>
+            <button class="active-tasks btn-secondary btn-lg" data="Active">Active: ${active}</button>
+            <button class="completed-tasks btn-secondary btn-lg" data="Completed">Completed: ${done}</button>  
 	         `
   };
 
@@ -184,7 +208,7 @@ $(function() {
   const qwe = (id) => {
     const span = document.querySelector(`.task-${id}`);
     const input = document.querySelector(`.edit-${id}`);
-
+    
       input.classList.add('none');
       span.classList.remove('none');
     
@@ -198,24 +222,41 @@ $(function() {
         });
       }
   };
-  
-  const pagination = () => {
-     const m = Math.ceil(todos.length/5);
-     let start = (m-1)*5;
-     render(todos.slice((m-1)*5, (start) + 5));
-        
-      if (todos.length%5 === 1) {
-        $('.pagination').append(`<div class='page btn-secondary'data="${m}">${m}</div>`);
-      }
-  }; 
-  
-  const currentPage = (event) => {
-    const m = event.target.getAttribute(`data`);
-    let start = (m-1)*5;
-     render(todos.slice((m-1)*5, (start) + 5));
-     console.log(m);
+
+  const fillFiveTodos = () => {
+    let start = (page - 1) * 5;
+    let end = start + 5;
+    let slicedTodos = todos.slice(start, end)
+    render(slicedTodos);
   };
+
+  const fillButtons = () => {
+    page = Math.ceil(todos.length/5);
+    let buttons = '';
+    $('.pagination').html(buttons)
+    for(let i = 1; i <= page; i++) {
+      buttons += makeButtons(i);
+    }
+    $('.pagination').html(buttons);
+    fillFiveTodos();
+  };
+
+  const makeButtons = (num) => {
+    return `
+      <button class='page page-${num} btn-secondary btn-lg'data="${num}">${num}</button>
+    `
+  };
+    
+  const currentPage = (event) => {
+     if (event.target.type === 'submit') {
+     page = event.target.getAttribute(`data`);
+     let start = (page-1)*5;
+     let end = start + 5;
+     render(todos.slice(start, end));
+    }
+  };
+
   $('.pagination').click(currentPage);
-render(todos);
+  render(todos);
 });
 
