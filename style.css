@@ -37,7 +37,7 @@ body {
 .tasks-counter {
     margin: 0 auto;
     justify-content: space-around;
-    
+    text-align: center;
     padding: 10px;
     font-family: sans-serif;
 }
