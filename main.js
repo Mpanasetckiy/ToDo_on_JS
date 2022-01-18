@@ -1,7 +1,9 @@
 $(() => {
-  const todos = [];
+  const TODOS = [];
   const KEY_ENTER = 'Enter';
+  const PAGESTODO = 5;
   let page = 1;
+  const { _ } = window;
   function Todo(description) {
     this.id = Date.now();
     this.description = description;
@@ -9,7 +11,7 @@ $(() => {
   }
 
   const makeTodo = (description) => {
-    todos.push(new Todo(description));
+    TODOS.push(new Todo(description));
   };
 
   const createHtml = (todo) => {
@@ -22,10 +24,27 @@ $(() => {
             </div>`;
   };
 
+  const render = (arr) => {
+    let result = '';
+
+    arr.forEach((elem) => {
+      result += createHtml(elem);
+    });
+    $('.container').html(result);
+    count();
+  };
+
+  const fillFiveTodos = () => {
+    const start = (page - 1) * PAGESTODO;
+    const end = start + PAGESTODO;
+    const slicedTodos = TODOS.slice(start, end);
+    render(slicedTodos);
+  };
+
   const checkTodo = () => {
     let check = true;
     const mainCheck = $('#main')[0];
-    todos.forEach((elem) => {
+    TODOS.forEach((elem) => {
       check = check && elem.checked;
     });
     if (check) {
@@ -35,9 +54,22 @@ $(() => {
     }
   };
 
+  const removePage = () => {
+    const start = (page - 1) * PAGESTODO;
+    const end = start + PAGESTODO;
+    if (page !== 1 && (TODOS.slice(start, end).length === 0)) {
+      $(`.page-${page}`).remove();
+      page -= 1;
+      fillFiveTodos();
+    } else {
+      fillFiveTodos();
+    }
+  };
+
   const isChecked = (event) => {
     const id = Number(event.target.dataset.id);
-    todos.forEach((elem) => {
+    TODOS.forEach((element) => {
+      const elem = element;
       if (id === elem.id) {
         if (event.target.checked) {
           elem.checked = true;
@@ -50,11 +82,25 @@ $(() => {
     removePage();
   };
 
+  const makeButtons = (num) => `
+  <button class='page btn-secondary btn-lg' data="${num}">${num}</button>
+`;
+
+  const fillButtons = () => {
+    page = Math.ceil(TODOS.length / PAGESTODO);
+    let buttons = '';
+    for (let i = 1; i <= page; i += 1) {
+      buttons += makeButtons(i);
+    }
+    $('.pagination').html(buttons);
+    fillFiveTodos();
+  };
+
   const addTodo = () => {
     if ($('#text').val().trim().length !== 0) {
       makeTodo($('#text').val());
       $('#text').val('');
-      render(todos);
+      render(TODOS);
       fillButtons();
     }
   };
@@ -65,66 +111,42 @@ $(() => {
     }
   };
 
-  const checkEnterAgain = (event) => {
-    if (event.key === KEY_ENTER) {
-      const id = Number(event.target.dataset.id);
-      qwe(id);
-    }
-  };
-
-  const removePage = () => {
-    const start = (page - 1) * 5;
-    const end = start + 5;
-    if (page !== 1 && (todos.slice(start, end).length === 0)) {
-      $(`.page-${page}`).remove();
-      page -= 1;
-      fillFiveTodos();
-    } else {
-      fillFiveTodos();
-    }
-  };
-
   const deleteTodo = (event) => {
     const id = Number(event.target.dataset.id);
-    todos.forEach((elem, index) => {
+    TODOS.forEach((elem, index) => {
       if (id === elem.id) {
-        todos.splice(index, 1);
+        TODOS.splice(index, 1);
       }
     });
     removePage();
   };
 
   const checkAll = (event) => {
-    todos.forEach((elem) => {
+    TODOS.forEach((element) => {
+      const elem = element;
       if (event.target.checked) {
         elem.checked = true;
       } else {
         elem.checked = false;
       }
     });
-    render(todos);
+    render(TODOS);
     removePage();
   };
 
-  // const  currentPageChecked = (arr) =>{
-  //   let start = (page-1)*5;
-  //    let end = start + 5;
-  //    render(arr.slice(start, end));
-  // }
-
-  const switchTabs = (activeBtn) => {
-    switch (activeBtn) {
+  const switchTabs = (activeButton) => {
+    switch (activeButton) {
       case 'All':
         removePage();
         break;
       case 'Active':
-        render(todos.filter((elem) => !elem.checked));
+        render(TODOS.filter((elem) => !elem.checked));
         break;
       case 'Completed':
-        render(todos.filter((elem) => elem.checked));
+        render(TODOS.filter((elem) => elem.checked));
         break;
-      default: return render(todos);
-    } return true;
+      default: render();
+    }
   };
 
   const getActiveBtn = (event) => {
@@ -132,21 +154,8 @@ $(() => {
     switchTabs(activeBtn);
   };
 
-  const count = () => {
-    let active = 0;
-    let done = 0;
-    todos.forEach((elem) => {
-      if (elem.checked) {
-        done += 1;
-      } else {
-        active += 1;
-      }
-    });
-    inner(active, done);
-  };
-
   const createHtmlTask = (active, done) => `
-            <button class="total-tasks btn-secondary btn-lg" data="All">All: ${todos.length}</button>
+            <button class="total-tasks btn-secondary btn-lg" data="All">All: ${TODOS.length}</button>
             <button class="active-tasks btn-secondary btn-lg" data="Active">Active: ${active}</button>
             <button class="completed-tasks btn-secondary btn-lg" data="Completed">Completed: ${done}</button>  
           `;
@@ -155,6 +164,36 @@ $(() => {
     let result = '';
     result = createHtmlTask(active, done);
     $('.tasks-counter').html(result);
+  };
+
+  const editTodoBlur = (id) => {
+    const span = document.querySelector(`.task-${id}`);
+    const input = document.querySelector(`.edit-${id}`);
+
+    input.classList.add('none');
+    span.classList.remove('none');
+
+    if (input.value.trim() !== '') {
+      span.innerHTML = _.escape(input.value);
+      TODOS.forEach((element) => {
+        const elem = element;
+        if (id === elem.id) {
+          elem.description = input.value;
+        }
+      });
+    }
+  };
+
+  const checkEnterAgain = (event) => {
+    if (event.key === KEY_ENTER) {
+      const id = Number(event.target.dataset.id);
+      editTodoBlur(id);
+    }
+  };
+
+  const onBlur = (event) => {
+    const id = Number(event.target.dataset.id);
+    editTodoBlur(id);
   };
 
   const editTodoClick = (event) => {
@@ -170,79 +209,34 @@ $(() => {
     input.addEventListener('blur', onBlur);
   };
 
-  const onBlur = (event) => {
-    const id = Number(event.target.dataset.id);
-    qwe(id);
-  };
-
-  const qwe = (id) => {
-    const span = document.querySelector(`.task-${id}`);
-    const input = document.querySelector(`.edit-${id}`);
-
-    input.classList.add('none');
-    span.classList.remove('none');
-
-    if (input.value.trim() !== '') {
-      span.innerHTML = _.escape(input.value);
-      todos.forEach((elem) => {
-        if (id === elem.id) {
-          elem.description = input.value;
-        }
-      });
-    }
-  };
-
-  const fillFiveTodos = () => {
-    const start = (page - 1) * 5;
-    const end = start + 5;
-    const slicedTodos = todos.slice(start, end);
-    render(slicedTodos);
-  };
-
-  const fillButtons = () => {
-    page = Math.ceil(todos.length / 5);
-    let buttons = '';
-    $('.pagination').html(buttons);
-    let i = 1;
-    i += 1;
-    for (i = 1; i <= page; i += 1) {
-      buttons += makeButtons(i);
-    }
-    $('.pagination').html(buttons);
-    fillFiveTodos();
-  };
-
-  const makeButtons = (num) => `
-      <button class='page page-${num} btn-secondary btn-lg'data="${num}">${num}</button>
-    `;
-
-  const currentPage = (event) => {
-    if (event.target.type === 'submit') {
-      page = event.target.getAttribute('data');
-      const start = (page - 1) * 5;
-      const end = start + 5;
-      render(todos.slice(start, end));
-    }
-  };
-
-  const render = (arr) => {
-    let result = '';
-
-    arr.forEach((elem) => {
-      result += createHtml(elem);
+  const count = () => {
+    let active = 0;
+    let done = 0;
+    TODOS.forEach((elem) => {
+      if (elem.checked) {
+        done += 1;
+      } else {
+        active += 1;
+      }
     });
-    $('.container').html(result);
     $('.close').click(deleteTodo);
     $('.task').dblclick(editTodoClick);
     $('.edit').keydown(checkEnterAgain);
     $('.elem-input').click(isChecked);
-    count();
+    inner(active, done);
   };
 
+  const currentPage = (event) => {
+    if (event.target.type === 'submit') {
+      page = event.target.getAttribute('data');
+      const start = (page - 1) * PAGESTODO;
+      const end = start + PAGESTODO;
+      render(TODOS.slice(start, end));
+    }
+  };
   $('#btn').click(addTodo);
   $('#text').keydown(checkEnter);
   $('#main').click(checkAll);
   $('.tasks-counter').click(getActiveBtn);
   $('.pagination').click(currentPage);
-  render(todos);
 });
