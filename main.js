@@ -4,6 +4,7 @@ $(() => {
   const PAGESTODO = 5;
   let page = 1;
   const { _ } = window;
+
   function Todo(description) {
     this.id = Date.now();
     this.description = description;
@@ -14,21 +15,17 @@ $(() => {
     TODOS.push(new Todo(description));
   };
 
-  const createHtml = (todo) => {
-    const item = _.escape(todo.description);
-    return ` <div class="flex shadow-lg p-3 mb-1 bg-white">
-              <input class="elem-input" data-id="${todo.id}" id="btn" type="checkbox" ${todo.checked ? 'checked' : ''}>
-              <span type="text" class="task task-${todo.id}" data-id="${todo.id}">${item}</span>
-              <input type="text" class="edit edit-${todo.id} none"  data-id="${todo.id}">
-              <button type="button" data-id="${todo.id}" class="close btn-close" aria-label="Close"></button>
-            </div>`;
-  };
-
   const render = (arr) => {
     let result = '';
 
-    arr.forEach((elem) => {
-      result += createHtml(elem);
+    arr.forEach((todo) => {
+      const item = _.escape(todo.description);
+      result += `<div class="flex shadow-lg p-3 mb-1 bg-white">
+                  <input class="elem-input" data-id="${todo.id}" id="btn" type="checkbox" ${todo.checked ? 'checked' : ''}>
+                  <span type="text" class="task task-${todo.id}" data-id="${todo.id}">${item}</span>
+                  <input type="text" class="edit edit-${todo.id} none"  data-id="${todo.id}">
+                  <button type="button" data-id="${todo.id}" class="close btn-close" aria-label="Close"></button>
+                </div>`;
     });
     $('.container').html(result);
     count();
@@ -222,7 +219,7 @@ $(() => {
     $('.elem-input').click(isChecked);
     inner(active, done);
   };
-
+  $('.close').click(deleteTodo);
   const currentPage = (event) => {
     if (event.target.type === 'submit') {
       page = event.target.getAttribute('data');
