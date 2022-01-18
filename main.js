@@ -82,15 +82,12 @@ $(() => {
     removePage();
   };
 
-  const makeButtons = (num) => `
-  <button class='page btn-secondary btn-lg' data="${num}">${num}</button>
-`;
-
   const fillButtons = () => {
     page = Math.ceil(TODOS.length / PAGESTODO);
     let buttons = '';
     for (let i = 1; i <= page; i += 1) {
-      buttons += makeButtons(i);
+      buttons += `<button class='page btn-secondary btn-lg' 
+      data="${i}">${i}</button>`;
     }
     $('.pagination').html(buttons);
     fillFiveTodos();
