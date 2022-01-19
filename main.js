@@ -36,6 +36,7 @@ $(() => {
   };
 
   const render = (arr) => {
+    console.log(arr);
     let result = '';
 
     arr.forEach((todo) => {
@@ -93,7 +94,7 @@ $(() => {
     page = Math.ceil(TODOS.length / PAGESTODO);
     let buttons = '';
     for (let i = 1; i <= page; i += 1) {
-      buttons += `<button class='page page-${i} btn-secondary btn-lg' 
+      buttons += `<button class='page page-${i} btn-secondary btn-sm' 
       data="${i}">${i}</button>`;
     }
     $('.pagination').html(buttons);
@@ -101,8 +102,8 @@ $(() => {
   };
 
   const addTodo = () => {
-    if ($('#text').val().trim().length !== 0) {
-      const inputValue = $('#text').val();
+    if ($('#text').val().length !== 0) {
+      const inputValue = $('#text').val().trim();
       const newTodo = {
         description: inputValue,
         checked: false,
@@ -169,8 +170,8 @@ $(() => {
     input.classList.add('none');
     span.classList.remove('none');
 
-    if (input.value.trim() !== '') {
-      span.innerHTML = _.escape(input.value);
+    if (input.value !== '') {
+      span.innerHTML = _.escape(input.value.trim());
       TODOS.forEach((element) => {
         const elem = element;
         if (id === elem.id) {
