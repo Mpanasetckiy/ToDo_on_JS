@@ -25,14 +25,21 @@ h1{font-size:40px;
     text-shadow: 2px 2px 5px #fff;
     opacity: 50%;
 }
-p{
+.main{
     font-family: sans-serif;
-    
     text-align: center;
+    font-size: large;
+    align-items: center;
+   }
+.input{
+    width: 360px;
+    border-radius: 10px;
+    margin: 5px;
+    border: 1px solid;
 }
 body {
-    
     color: #000000;
+    
 }
 .tasks-counter {
     margin: 0 auto;
@@ -61,19 +68,17 @@ body {
     max-width:100%;
     border-radius: 5px;
 }
-.page {
-   
+.page {   
     display: inline-block;
-   
     border: 1px solid;
     margin:  1px;
-    
     border-radius: 15px;
 }
 .info {
     font-size: 10px;
     color: #b8abab;
     text-shadow: 0 1px 0 #25333a;
+    text-align: center;
 }
 .elem-input {
     align-self: center;
