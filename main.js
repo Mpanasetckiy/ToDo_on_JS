@@ -180,18 +180,6 @@ $(() => {
     }
   };
 
-  const checkEnterAgain = (event) => {
-    if (event.key === KEY_ENTER) {
-      const id = Number(event.target.dataset.id);
-      editTodoBlur(id);
-    }
-  };
-
-  const onBlur = (event) => {
-    const id = Number(event.target.dataset.id);
-    editTodoBlur(id);
-  };
-
   const editTodoClick = (event) => {
     const id = Number(event.target.dataset.id);
 
@@ -203,7 +191,10 @@ $(() => {
     input.focus();
 
     input.value = span.innerHTML;
-    input.addEventListener('blur', onBlur);
+    input.addEventListener('blur', (Event) => {
+      const idElem = Number(Event.target.dataset.id);
+      editTodoBlur(idElem);
+    });
   };
 
   const currentPage = (event) => {
@@ -228,8 +219,9 @@ $(() => {
   });
 
   CONTAINER_EVENT.addEventListener('keydown', (event) => {
-    if (event.target.matches('.edit')) {
-      checkEnterAgain(event);
+    if (event.key === KEY_ENTER) {
+      const id = Number(event.target.dataset.id);
+      editTodoBlur(id);
     }
   });
 
