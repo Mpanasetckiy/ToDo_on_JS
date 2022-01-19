@@ -2,18 +2,9 @@ $(() => {
   const TODOS = [];
   const KEY_ENTER = 'Enter';
   const PAGESTODO = 5;
+  const CONTAINER_EVENT = document.querySelector('.container');
   let page = 1;
   const { _ } = window;
-
-  function Todo(description) {
-    this.id = Date.now();
-    this.description = description;
-    this.checked = false;
-  }
-
-  const makeTodo = (description) => {
-    TODOS.push(new Todo(description));
-  };
 
   const render = (arr) => {
     let result = '';
@@ -23,12 +14,12 @@ $(() => {
       result += `<div class="flex shadow-lg p-3 mb-1 bg-white">
                   <input class="elem-input" data-id="${todo.id}" id="btn" type="checkbox" ${todo.checked ? 'checked' : ''}>
                   <span type="text" class="task task-${todo.id}" data-id="${todo.id}">${item}</span>
-                  <input type="text" class="edit edit-${todo.id} none"  data-id="${todo.id}">
+                  <input type="text" class="edit edit-${todo.id} none" data-id="${todo.id}">
                   <button type="button" data-id="${todo.id}" class="close btn-close" aria-label="Close"></button>
                 </div>`;
     });
     $('.container').html(result);
-    count();
+    counter();
   };
 
   const fillFiveTodos = () => {
@@ -39,16 +30,10 @@ $(() => {
   };
 
   const checkTodo = () => {
-    let check = true;
-    const mainCheck = $('#main')[0];
-    TODOS.forEach((elem) => {
-      check = check && elem.checked;
-    });
-    if (check) {
-      mainCheck.checked = true;
-    } else {
-      mainCheck.checked = false;
-    }
+    const checked = true;
+    const checkAll = $('#main')[0];
+    const check = TODOS.every((elem) => checked === elem.checked);
+    checkAll.checked = check;
   };
 
   const removePage = () => {
@@ -64,17 +49,15 @@ $(() => {
   };
 
   const isChecked = (event) => {
-    const id = Number(event.target.dataset.id);
-    TODOS.forEach((element) => {
-      const elem = element;
-      if (id === elem.id) {
-        if (event.target.checked) {
-          elem.checked = true;
-        } else {
-          elem.checked = false;
-        }
+    if (event.target.matches('.elem-input')) {
+      const id = Number(event.target.dataset.id);
+      const elem = TODOS.find((element) => element.id === id);
+      if (event.target.checked) {
+        elem.checked = true;
+      } else {
+        elem.checked = false;
       }
-    });
+    }
     checkTodo();
     removePage();
   };
@@ -83,7 +66,7 @@ $(() => {
     page = Math.ceil(TODOS.length / PAGESTODO);
     let buttons = '';
     for (let i = 1; i <= page; i += 1) {
-      buttons += `<button class='page btn-secondary btn-lg' 
+      buttons += `<button class='page page-${i} btn-secondary btn-lg' 
       data="${i}">${i}</button>`;
     }
     $('.pagination').html(buttons);
@@ -92,10 +75,17 @@ $(() => {
 
   const addTodo = () => {
     if ($('#text').val().trim().length !== 0) {
-      makeTodo($('#text').val());
+      const inputValue = $('#text').val();
+      const newTodo = {
+        description: inputValue,
+        checked: false,
+        id: Date.now(),
+      };
+      TODOS.push(newTodo);
       $('#text').val('');
       render(TODOS);
       fillButtons();
+      checkTodo();
     }
   };
 
@@ -104,8 +94,20 @@ $(() => {
       addTodo();
     }
   };
-
   const deleteTodo = (event) => {
+    if (event.target.matches('.close')) {
+      const id = Number(event.target.dataset.id);
+      TODOS.forEach((elem, index) => {
+        if (id === elem.id) {
+          TODOS.splice(index, 1);
+        }
+      });
+    }
+    checkTodo();
+    removePage();
+  };
+
+  /*  const deleteTodoo = (event) => {
     const id = Number(event.target.dataset.id);
     TODOS.forEach((elem, index) => {
       if (id === elem.id) {
@@ -113,8 +115,9 @@ $(() => {
       }
     });
     removePage();
+    checkTodo();
   };
-
+ */
   const checkAll = (event) => {
     TODOS.forEach((element) => {
       const elem = element;
@@ -144,8 +147,10 @@ $(() => {
   };
 
   const getActiveBtn = (event) => {
-    const activeBtn = event.target.getAttribute('data');
-    switchTabs(activeBtn);
+    if (event.target.type === 'submit') {
+      const activeBtn = event.target.getAttribute('data');
+      switchTabs(activeBtn);
+    }
   };
 
   const createHtmlTask = (active, done) => `
@@ -198,12 +203,13 @@ $(() => {
 
     span.classList.add('none');
     input.classList.remove('none');
+    input.focus();
 
     input.value = span.innerHTML;
     input.addEventListener('blur', onBlur);
   };
 
-  const count = () => {
+  const counter = () => {
     let active = 0;
     let done = 0;
     TODOS.forEach((elem) => {
@@ -213,13 +219,11 @@ $(() => {
         active += 1;
       }
     });
-    $('.close').click(deleteTodo);
     $('.task').dblclick(editTodoClick);
     $('.edit').keydown(checkEnterAgain);
-    $('.elem-input').click(isChecked);
     inner(active, done);
   };
-  $('.close').click(deleteTodo);
+
   const currentPage = (event) => {
     if (event.target.type === 'submit') {
       page = event.target.getAttribute('data');
@@ -228,6 +232,11 @@ $(() => {
       render(TODOS.slice(start, end));
     }
   };
+
+  CONTAINER_EVENT.addEventListener('click', (event) => {
+    deleteTodo(event);
+    isChecked(event);
+  });
   $('#btn').click(addTodo);
   $('#text').keydown(checkEnter);
   $('#main').click(checkAll);
