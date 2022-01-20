@@ -1,5 +1,5 @@
 $(() => {
-  const TODOS = [];
+  let TODOS = [];
   const KEY_ENTER = 'Enter';
   const PAGESTODO = 5;
   const INITIAL_EVENT = document.querySelector('.main');
@@ -9,6 +9,7 @@ $(() => {
   const ACTUAL_PAGE = document.querySelector('.pagination');
   let page = 1;
   const { _ } = window;
+  let tabValue = 'All';
 
   const createHtmlTask = (active, done) => `
             <button class="total-tasks btn-secondary btn-lg" data="All">All: ${TODOS.length}</button>
@@ -36,7 +37,6 @@ $(() => {
   };
 
   const render = (arr) => {
-    console.log(arr);
     let result = '';
 
     arr.forEach((todo) => {
@@ -52,10 +52,10 @@ $(() => {
     counter();
   };
 
-  const fillFiveTodos = () => {
+  const fillFiveTodos = (arr = TODOS) => {
     const start = (page - 1) * PAGESTODO;
     const end = start + PAGESTODO;
-    const slicedTodos = TODOS.slice(start, end);
+    const slicedTodos = arr.slice(start, end);
     render(slicedTodos);
   };
 
@@ -90,19 +90,19 @@ $(() => {
     removePage();
   };
 
-  const fillButtons = () => {
-    page = Math.ceil(TODOS.length / PAGESTODO);
+  const fillButtons = (arr = TODOS) => {
+    page = Math.ceil(arr.length / PAGESTODO);
     let buttons = '';
     for (let i = 1; i <= page; i += 1) {
       buttons += `<button class='page page-${i} btn-secondary btn-sm' 
       data="${i}">${i}</button>`;
     }
     $('.pagination').html(buttons);
-    fillFiveTodos();
+    fillFiveTodos(arr);
   };
 
   const addTodo = () => {
-    if ($('#text').val().length !== 0) {
+    if ($('#text').val().trim().length !== 0) {
       const inputValue = $('#text').val().trim();
       const newTodo = {
         description: inputValue,
@@ -115,6 +115,12 @@ $(() => {
       fillButtons();
       checkTodo();
     }
+  };
+
+  const deleteAllTodo = () => {
+    TODOS = TODOS.filter((element) => !element.checked);
+    removePage();
+    fillButtons();
   };
 
   const deleteTodo = (event) => {
@@ -137,7 +143,6 @@ $(() => {
         elem.checked = false;
       }
     });
-    render(TODOS);
     removePage();
   };
 
@@ -145,12 +150,18 @@ $(() => {
     switch (activeButton) {
       case 'All':
         removePage();
+        fillButtons();
+        tabValue = 'All';
         break;
       case 'Active':
-        render(TODOS.filter((elem) => !elem.checked));
+        fillFiveTodos(TODOS.filter((elem) => !elem.checked));
+        fillButtons(TODOS.filter((elem) => !elem.checked));
+        tabValue = 'Active';
         break;
       case 'Completed':
-        render(TODOS.filter((elem) => elem.checked));
+        fillFiveTodos(TODOS.filter((elem) => elem.checked));
+        fillButtons(TODOS.filter((elem) => elem.checked));
+        tabValue = 'Completed';
         break;
       default: render();
     }
@@ -202,7 +213,13 @@ $(() => {
     page = event.target.getAttribute('data');
     const start = (page - 1) * PAGESTODO;
     const end = start + PAGESTODO;
-    render(TODOS.slice(start, end));
+    if (tabValue === 'All') {
+      render(TODOS.slice(start, end));
+    } else if (tabValue === 'Active') {
+      fillFiveTodos(TODOS.filter((elem) => !elem.checked));
+    } else {
+      fillFiveTodos(TODOS.filter((elem) => elem.checked));
+    }
   };
 
   CONTAINER_EVENT.addEventListener('click', (event) => {
@@ -223,6 +240,12 @@ $(() => {
     if (event.key === KEY_ENTER) {
       const id = Number(event.target.dataset.id);
       editTodoBlur(id);
+    }
+  });
+
+  INITIAL_EVENT.addEventListener('click', (event) => {
+    if (event.target.type === 'button') {
+      deleteAllTodo();
     }
   });
 
