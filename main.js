@@ -63,6 +63,7 @@ $(() => {
     const checkAll = $('#main')[0];
     const check = TODOS.every((elem) => checked === elem.checked);
     checkAll.checked = check;
+    addActive();
   };
 
   const removePage = () => {
@@ -71,9 +72,10 @@ $(() => {
     if (page !== 1 && (TODOS.slice(start, end).length === 0)) {
       $(`.page-${page}`).remove();
       page -= 1;
-      fillFiveTodos();
+      fillButtons();
+      addActive();
     } else {
-      fillFiveTodos();
+      fillButtons();
     }
   };
 
@@ -86,7 +88,7 @@ $(() => {
       elem.checked = false;
     }
     checkTodo();
-    removePage();
+    fillFiveTodos();
   };
 
   const fillButtons = (arr = TODOS) => {
@@ -98,6 +100,7 @@ $(() => {
     }
     $('.pagination').html(buttons);
     fillFiveTodos(arr);
+    addActive();
   };
 
   const addTodo = () => {
@@ -112,14 +115,12 @@ $(() => {
       $('#text').val('');
       fillButtons();
       checkTodo();
-     // addActive();
     }
   };
 
   const deleteAllTodo = () => {
     TODOS = TODOS.filter((element) => !element.checked);
     removePage();
-    fillFiveTodos();
   };
 
   const deleteTodo = (event) => {
@@ -142,7 +143,7 @@ $(() => {
         elem.checked = false;
       }
     });
-    fillFiveTodos();
+    fillButtons();
   };
 
   const switchTabs = (activeButton) => {
@@ -153,12 +154,10 @@ $(() => {
         tabValue = 'All';
         break;
       case 'Active':
-        fillFiveTodos(TODOS.filter((elem) => !elem.checked));
         fillButtons(TODOS.filter((elem) => !elem.checked));
         tabValue = 'Active';
         break;
       case 'Completed':
-        fillFiveTodos(TODOS.filter((elem) => elem.checked));
         fillButtons(TODOS.filter((elem) => elem.checked));
         tabValue = 'Completed';
         break;
@@ -209,15 +208,13 @@ $(() => {
   };
 
   const addActive = (pg = page) => {
-    console.log(pg);
     const buttonsPage = document.querySelectorAll('.page');
     buttonsPage.forEach((elem) => {
       elem.classList.remove('active');
-      if (elem.innerHTML === pg) {
-        elem.classList.add('active');
+      if (elem.innerHTML == pg) {
+          elem.classList.add('active');
       }
     });
-   // fillFiveTodos();
   };
 
   const currentPage = (event) => {
