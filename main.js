@@ -40,11 +40,10 @@ $(() => {
     let result = '';
 
     arr.forEach((todo) => {
-      const item = _.escape(todo.description);
       result += `<div class="flex shadow-lg p-3 mb-1 bg-white">
                   <input class="elem-input" data-id="${todo.id}" id="btn" type="checkbox" ${todo.checked ? 'checked' : ''}>
-                  <span type="text" class="task task-${todo.id}" data-id="${todo.id}">${item}</span>
-                  <input type="text" class="edit edit-${todo.id} none" data-id="${todo.id}">
+                  <span type="text" class="task task-${todo.id}" data-id="${todo.id}">${todo.description}</span>
+                  <input type="text" value="${todo.description}" class="edit edit-${todo.id} none" data-id="${todo.id}">
                   <button type="button" data-id="${todo.id}" class="close btn-close" aria-label="Close"></button>
                 </div>`;
     });
@@ -105,22 +104,22 @@ $(() => {
     if ($('#text').val().trim().length !== 0) {
       const inputValue = $('#text').val().trim();
       const newTodo = {
-        description: inputValue,
+        description: _.escape(inputValue),
         checked: false,
         id: Date.now(),
       };
       TODOS.push(newTodo);
       $('#text').val('');
-      render(TODOS);
       fillButtons();
       checkTodo();
+     // addActive();
     }
   };
 
   const deleteAllTodo = () => {
     TODOS = TODOS.filter((element) => !element.checked);
     removePage();
-    fillButtons();
+    fillFiveTodos();
   };
 
   const deleteTodo = (event) => {
@@ -143,7 +142,7 @@ $(() => {
         elem.checked = false;
       }
     });
-    removePage();
+    fillFiveTodos();
   };
 
   const switchTabs = (activeButton) => {
@@ -181,12 +180,12 @@ $(() => {
     input.classList.add('none');
     span.classList.remove('none');
 
-    if (input.value !== '') {
-      span.innerHTML = _.escape(input.value.trim());
+    if (input.value.trim() !== '') {
+      span.innerHTML = input.value.trim();
       TODOS.forEach((element) => {
         const elem = element;
         if (id === elem.id) {
-          elem.description = input.value;
+          elem.description = _.escape(input.value);
         }
       });
     }
@@ -197,16 +196,28 @@ $(() => {
 
     const span = document.querySelector(`.task-${id}`);
     const input = document.querySelector(`.edit-${id}`);
+    const inputEditValue = input.value;
 
     span.classList.add('none');
     input.classList.remove('none');
     input.focus();
-
-    input.value = span.innerHTML;
+    span.innerHTML = inputEditValue;
     input.addEventListener('blur', (Event) => {
       const idElem = Number(Event.target.dataset.id);
       editTodoBlur(idElem);
     });
+  };
+
+  const addActive = (pg = page) => {
+    console.log(pg);
+    const buttonsPage = document.querySelectorAll('.page');
+    buttonsPage.forEach((elem) => {
+      elem.classList.remove('active');
+      if (elem.innerHTML === pg) {
+        elem.classList.add('active');
+      }
+    });
+   // fillFiveTodos();
   };
 
   const currentPage = (event) => {
@@ -272,6 +283,7 @@ $(() => {
   ACTUAL_PAGE.addEventListener('click', (event) => {
     if (event.target.type === 'submit') {
       currentPage(event);
+      addActive();
     }
   });
 });
