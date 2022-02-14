@@ -2,11 +2,11 @@ $(() => {
   let TODOS = [];
   const KEY_ENTER = 'Enter';
   const PAGESTODO = 5;
-  const INITIAL_EVENT = document.querySelector('.main');
-  const CONTAINER_EVENT = document.querySelector('.container');
-  const INPUT_ENTER = document.querySelector('.input');
-  const TASK_COUNTER = document.querySelector('.tasks-counter');
-  const ACTUAL_PAGE = document.querySelector('.pagination');
+  const INITIAL_EVENT = document.querySelector('.todo__menu');
+  const CONTAINER_EVENT = document.querySelector('.todo__wrapper');
+  const INPUT_ENTER = document.querySelector('.todo__input');
+  const TASK_COUNTER = document.querySelector('.todo__counter');
+  const ACTUAL_PAGE = document.querySelector('.todo__pagination');
   let page = 1;
   const { _ } = window;
   let tabValue = 'All';
@@ -20,7 +20,8 @@ $(() => {
   const inner = (active, done) => {
     let result = '';
     result = createHtmlTask(active, done);
-    $('.tasks-counter').html(result);
+    $('.todo__counter').html(result);
+    
   };
 
   const counter = () => {
@@ -40,14 +41,14 @@ $(() => {
     let result = '';
 
     arr.forEach((todo) => {
-      result += `<div class="flex shadow-lg p-3 mb-1 bg-white">
-                  <input class="elem-input" data-id="${todo.id}" id="btn" type="checkbox" ${todo.checked ? 'checked' : ''}>
+      result += `<li class="todo__task shadow-lg p-3 mb-1 bg-white">
+                  <input class="todo__task-input" data-id="${todo.id}" id="btn" type="checkbox" ${todo.checked ? 'checked' : ''}>
                   <span type="text" class="task task-${todo.id}" data-id="${todo.id}">${todo.description}</span>
-                  <input type="text" value="${todo.description}" class="edit edit-${todo.id} none" data-id="${todo.id}">
+                  <input type="text" value="${todo.description}" class="edit edit-${todo.id} disabled" data-id="${todo.id}">
                   <button type="button" data-id="${todo.id}" class="close btn-close" aria-label="Close"></button>
-                </div>`;
+                </li>`;
     });
-    $('.container').html(result);
+    $('.todo__wrapper').html(result);
     counter();
   };
 
@@ -95,24 +96,24 @@ $(() => {
     page = Math.ceil(arr.length / PAGESTODO);
     let buttons = '';
     for (let i = 1; i <= page; i += 1) {
-      buttons += `<button class='page page-${i} btn-secondary btn-sm' 
+      buttons += `<button class='todo__page page-${i} btn-secondary btn-sm' 
       data="${i}">${i}</button>`;
     }
-    $('.pagination').html(buttons);
+    $('.todo__pagination').html(buttons);
     fillFiveTodos(arr);
     addActive();
   };
 
   const addTodo = () => {
-    if ($('#text').val().trim().length !== 0) {
-      const inputValue = $('#text').val().trim();
+    if ($('.todo__input').val().trim().length !== 0) {
+      const inputValue = $('.todo__input').val().trim();
       const newTodo = {
         description: _.escape(inputValue),
         checked: false,
         id: Date.now(),
       };
       TODOS.push(newTodo);
-      $('#text').val('');
+      $('.todo__input').val('');
       fillButtons();
       checkTodo();
     }
@@ -176,8 +177,8 @@ $(() => {
     const span = document.querySelector(`.task-${id}`);
     const input = document.querySelector(`.edit-${id}`);
 
-    input.classList.add('none');
-    span.classList.remove('none');
+    input.classList.add('disabled');
+    span.classList.remove('disabled');
 
     if (input.value.trim() !== '') {
       span.innerHTML = input.value.trim();
@@ -197,8 +198,8 @@ $(() => {
     const input = document.querySelector(`.edit-${id}`);
     const inputEditValue = input.value;
 
-    span.classList.add('none');
-    input.classList.remove('none');
+    span.classList.add('disabled');
+    input.classList.remove('disabled');
     input.focus();
     span.innerHTML = inputEditValue;
     input.addEventListener('blur', (Event) => {
@@ -208,7 +209,7 @@ $(() => {
   };
 
   const addActive = (pg = page) => {
-    const buttonsPage = document.querySelectorAll('.page');
+    const buttonsPage = document.querySelectorAll('.todo__page');
     buttonsPage.forEach((elem) => {
       elem.classList.remove('active');
       if (elem.innerHTML == pg) {

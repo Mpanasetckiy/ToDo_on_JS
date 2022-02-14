@@ -9,20 +9,26 @@
 		<title>Todo</title>
  </head>
  <body >
-	<h1>todos</h1>
-	<div class="main"><label>Check all</label>
-	<input type="checkbox" id="main">
-	<input type="text" class="input" placeholder=" What needs to be done?" id="text">
-    <button class="btn btn-outline-secondary btn-lg" id="btn">Add</button>
-	<button type="button" class="btn btn-outline-danger btn-lg">DELETE ALL</button>
-    </div>
-	<div class="container"></div>
-   	<div class="tasks-counter"></div>
-	<ul class="pagination"></ul>
-	<footer class="info">
+	<header class="header">
+		 <h1>todos</h1>
+	</header>
+	<section class="todo">
+		<div class="todo__container">
+			<div class="todo__menu">
+				<label>Check all</label>
+				<input type="checkbox" id="main">
+				<input type="text" class="todo__input" placeholder=" What needs to be done?">
+				<button class="btn btn-outline-secondary btn-sm" id="btn">Add</button>
+				<button type="button" class="btn btn-outline-danger btn-sm">DELETE ALL</button>
+			</div>
+			<div class="todo__wrapper"></div>
+			<div class="todo__counter"></div>
+			<ul class="todo__pagination"></ul>
+		</div>
+	</section>
+	<footer class="footer">
 		<p>Double-click to edit a todo</p>
 		<p>Created by Maksim Lukianenko</p>
-		<p>Part of Dunice</a></p>
 	</footer>
 	<script src="https://cdn.jsdelivr.net/lodash/4.10.0/lodash.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
