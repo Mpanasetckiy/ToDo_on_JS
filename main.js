@@ -12,9 +12,9 @@ $(() => {
   let tabValue = 'All';
 
   const createHtmlTask = (active, done) => `
-            <button class="total-tasks btn-secondary btn-lg" data="All">All: ${TODOS.length}</button>
-            <button class="active-tasks btn-secondary btn-lg" data="Active">Active: ${active}</button>
-            <button class="completed-tasks btn-secondary btn-lg" data="Completed">Completed: ${done}</button>  
+            <button class="total-tasks btn-secondary btn-sm" data="All">All: ${TODOS.length}</button>
+            <button class="active-tasks btn-secondary btn-sm" data="Active">Active: ${active}</button>
+            <button class="completed-tasks btn-secondary btn-sm" data="Completed">Completed: ${done}</button>  
           `;
 
   const inner = (active, done) => {

@@ -14,14 +14,23 @@ h1 {
     display: flex;
     align-items: center;
     column-gap: 10px;
-    width: 742px;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.todo__menu > div {
+    margin: 0;
+}
+
+label, span {
+    margin: 0;
 }
 #main {
     cursor: pointer;
-    transform: scale(1.5);
+    width: fit-content;
 }
 .todo__input {
-    width: 380px;
+    min-width: 220px;
     height: 35px;
     border-radius: 0.2rem;
     border: 1px solid;
@@ -30,31 +39,31 @@ h1 {
     display: flex;
     flex-direction: column;
     margin: 10px auto;
+    padding: 0;
+    width: min(max(300px, 50%), 600px);
 }
 .todo__task {
     display: flex;
     align-items: center;
-    width: 380px;
+    justify-content: space-between;
+    min-width: 300px;
     word-wrap: break-word;
     border:1px solid #25333a;
     border-radius: 0.2rem;
+    margin: 0;
 }
 .disabled {
     display: none;
 }
 .todo__counter {
-    width: 452px;
+    text-align: center;
 }
 .todo__pagination {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    column-gap: 2px;
-    row-gap: 2px;
-    margin-top: 10px;
-    max-width: 550px;
-    width: 100%;
+    text-align: center;
+    padding: 0;
+    max-width: 300px;
     border-radius: 2px;
+    margin-top: 1rem;
 }
 .todo__page {   
     display: inline-block;
@@ -74,4 +83,13 @@ h1 {
     color: #b8abab;
     text-shadow: 0 1px 0 #25333a;
     text-align: center;
+}
+
+@media (max-width:520px) {
+    .todo__menu {
+        flex-direction: column-reverse;
+        max-width: 300px;
+        align-items: unset;
+        row-gap: 0.5rem;
+    }
 }

@@ -15,13 +15,15 @@
 	<section class="todo">
 		<div class="todo__container">
 			<div class="todo__menu">
-				<label>Check all</label>
-				<input type="checkbox" id="main">
+				<div>
+					<label>All</label>
+					<input type="checkbox" id="main">
+				</div>
 				<input type="text" class="todo__input" placeholder=" What needs to be done?">
 				<button class="btn btn-outline-secondary btn-sm" id="btn">Add</button>
 				<button type="button" class="btn btn-outline-danger btn-sm">DELETE ALL</button>
 			</div>
-			<div class="todo__wrapper"></div>
+			<ul class="todo__wrapper"></ul>
 			<div class="todo__counter"></div>
 			<ul class="todo__pagination"></ul>
 		</div>
