@@ -40,7 +40,7 @@ label, span {
     flex-direction: column;
     margin: 10px auto;
     padding: 0;
-    width: min(max(300px, 50%), 600px);
+    width: min(max(300px, 50%), 450px);
 }
 .todo__task {
     display: flex;
